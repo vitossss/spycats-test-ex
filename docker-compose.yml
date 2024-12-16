@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn src.main:app --host 0.0.0.0'
+    container_name: spycats-app
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+  db:
+    container_name: spycats_db
+    image: postgres
+    volumes:
+      - spycats_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+
+volumes:
+  spycats_data:
